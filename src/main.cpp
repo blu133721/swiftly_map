@@ -44,7 +44,7 @@ void Command_Map(int playerID, const char **args, uint32_t argsCount, bool silen
 
 void Command_Map1(int playerID, const char **args, uint32_t argsCount, bool silent)
 {
-        server->ExecuteCommand("sv_cheats %s", config->Fetch<const char*>("maps.map1"));
+        server->ExecuteCommand("map %s", config->Fetch<const char*>("maps.map1"));
         return;
 }
 
