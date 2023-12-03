@@ -1,18 +1,12 @@
 #include <swiftly/swiftly.h>
 #include <swiftly/server.h>
-#include <swiftly/database.h>
 #include <swiftly/commands.h>
 #include <swiftly/configuration.h>
-#include <swiftly/logger.h>
-#include <swiftly/timers.h>
 
 Server *server = nullptr;
 PlayerManager *g_playerManager = nullptr;
-Database *db = nullptr;
 Commands *commands = nullptr;
 Configuration *config = nullptr;
-Logger *logger = nullptr;
-Timers *timers = nullptr;
 
 void OnProgramLoad(const char *pluginName, const char *mainFilePath)
 {
@@ -22,81 +16,81 @@ void OnProgramLoad(const char *pluginName, const char *mainFilePath)
     g_playerManager = new PlayerManager();
     commands = new Commands(pluginName);
     config = new Configuration();
-    logger = new Logger(mainFilePath, pluginName);
-    timers = new Timers();
+}
+
+void Command_Maps(int playerID, const char **args, uint32_t argsCount, bool silent)
+{
+    Player *player = g_playerManager->GetPlayer(playerID);
+    if (!player)
+        return;
+
+    player->SendMsg(HUD_PRINTTALK, "[1TAP] -----------------------------------------------------");
+
+    const char* mapNames[] = {
+        "maps.map1",
+        "maps.map2",
+        "maps.map3",
+        "maps.map4",
+        "maps.map5",
+        "maps.map6",
+        "maps.map7"
+    };
+
+    for (int i = 0; i < sizeof(mapNames) / sizeof(mapNames[0]); ++i)
+    {
+        player->SendMsg(HUD_PRINTTALK, "%d - Map: %s", i + 1, config->Fetch<const char*>(mapNames[i]));
+    }
+
+    player->SendMsg(HUD_PRINTTALK, "[1TAP] -----------------------------------------------------");
+}
+
+struct TimerData {
+    int mapIndex;
+    Player* player;
+};
+
+void Timer(int timerID, void* data)
+{
+    TimerData* timerData = static_cast<TimerData*>(data);
+    server->ExecuteCommand("changelevel %s", config->Fetch<const char*>(mapNames[timerData->mapIndex]));
+    timerData->player->SendMsg(HUD_PRINTTALK, "[1TAP] Changing to Map: %s", config->Fetch<const char*>(mapNames[timerData->mapIndex]));
+    delete timerData;  // Don't forget to delete the data when you're done with it
 }
 
 void Command_Map(int playerID, const char **args, uint32_t argsCount, bool silent)
 {
-
-        Player *player = g_playerManager->GetPlayer(playerID);
-        if (!player)
-            return;
-
-        player->SendMsg(HUD_PRINTTALK, "[1TAP] -----------------------------------------------------");
-        player->SendMsg(HUD_PRINTTALK, "!1 - Map: %s ", config->Fetch<const char*>("maps.map1"));
-        player->SendMsg(HUD_PRINTTALK, "!2 - Map: %s ", config->Fetch<const char*>("maps.map2"));
-        player->SendMsg(HUD_PRINTTALK, "!3 - Map: %s ", config->Fetch<const char*>("maps.map3"));
-        player->SendMsg(HUD_PRINTTALK, "!4 - Map: %s ", config->Fetch<const char*>("maps.map4"));
-        player->SendMsg(HUD_PRINTTALK, "!5 - Map: %s ", config->Fetch<const char*>("maps.map5"));
-        player->SendMsg(HUD_PRINTTALK, "!6 - Map: %s ", config->Fetch<const char*>("maps.map6"));
-        player->SendMsg(HUD_PRINTTALK, "!7 - Map: %s ", config->Fetch<const char*>("maps.map7"));
-        player->SendMsg(HUD_PRINTTALK, "[1TAP] -----------------------------------------------------");
+    Player *player = g_playerManager->GetPlayer(playerID);
+    if (!player || argsCount < 1)
         return;
-}
 
-void Command_Map1(int playerID, const char **args, uint32_t argsCount, bool silent)
-{
-        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map1"));
-        return;
-}
+    const char *mapNumber = args[0];
+    const char *mapNames[] = {
+        "maps.map1",
+        "maps.map2",
+        "maps.map3",
+        "maps.map4",
+        "maps.map5",
+        "maps.map6",
+        "maps.map7"
+    };
 
-void Command_Map2(int playerID, const char **args, uint32_t argsCount, bool silent)
-{
-        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map2"));
-        return;
-}
+    int mapIndex = atoi(mapNumber) - 1;
 
-void Command_Map3(int playerID, const char **args, uint32_t argsCount, bool silent)
-{
-        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map3"));
-        return;
-}
-
-void Command_Map4(int playerID, const char **args, uint32_t argsCount, bool silent)
-{
-        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map4"));
-        return;
-}
-
-void Command_Map5(int playerID, const char **args, uint32_t argsCount, bool silent)
-{
-        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map5"));
-        return;
-}
-
-void Command_Map6(int playerID, const char **args, uint32_t argsCount, bool silent)
-{
-        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map6"));
-        return;
-}
-
-void Command_Map7(int playerID, const char **args, uint32_t argsCount, bool silent)
-{
-        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map7"));
-        return;
+    if (mapIndex >= 0 && mapIndex < sizeof(mapNames) / sizeof(mapNames[0]))
+    {
+        TimerData* data = new TimerData{mapIndex, player};
+        timers->RegisterTimer(5000, Timer, data);
+    }
+    else
+    {
+        player->SendMsg(HUD_PRINTTALK, "[1TAP] Invalid map number. Use a number between 1 and 7.");
+    }
 }
 
 void OnPluginStart()
 {
-    commands->Register("map", reinterpret_cast<void *>(&Command_Map));
-    commands->Register("1", reinterpret_cast<void *>(&Command_Map1));
-    commands->Register("2", reinterpret_cast<void *>(&Command_Map2));
-    commands->Register("3", reinterpret_cast<void *>(&Command_Map3));
-    commands->Register("4", reinterpret_cast<void *>(&Command_Map4));
-    commands->Register("5", reinterpret_cast<void *>(&Command_Map5));
-    commands->Register("6", reinterpret_cast<void *>(&Command_Map6));
-    commands->Register("7", reinterpret_cast<void *>(&Command_Map7));
+    commands->Register("map", reinterpret_cast<void*>(&Command_Map));
+    commands->Register("maps", reinterpret_cast<void*>(&Command_Maps));
 }
 
 void OnPluginStop()
