@@ -10,6 +10,17 @@ Commands *commands = nullptr;
 Configuration *config = nullptr;
 Timers *timers = nullptr;
 
+const char *mapNames[] = {
+    "maps.map1",
+    "maps.map2",
+    "maps.map3",
+    "maps.map4",
+    "maps.map5",
+    "maps.map6",
+    "maps.map7"
+};
+
+
 void OnProgramLoad(const char *pluginName, const char *mainFilePath)
 {
     Swiftly_Setup(pluginName, mainFilePath);
@@ -29,16 +40,6 @@ void Command_Maps(int playerID, const char **args, uint32_t argsCount, bool sile
 
     player->SendMsg(HUD_PRINTTALK, "[1TAP] -----------------------------------------------------");
 
-    const char* mapNames[] = {
-        "maps.map1",
-        "maps.map2",
-        "maps.map3",
-        "maps.map4",
-        "maps.map5",
-        "maps.map6",
-        "maps.map7"
-    };
-
     for (int i = 0; i < sizeof(mapNames) / sizeof(mapNames[0]); ++i)
     {
         player->SendMsg(HUD_PRINTTALK, "%d - Map: %s", i + 1, config->Fetch<const char*>(mapNames[i]));
@@ -53,12 +54,14 @@ void Timer()
 }
 
 unsigned long long timerid;
+int Map = 0;
 
 int elapsedTime = 5;
 
 void TimerCallback() {
-    elapsedTime--;  // decrement elapsedTime.
+    elapsedTime--;
     if (elapsedTime == 0) {
+        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>(mapNames[Map]));
         timers->DestroyTimer(timerid);
     }
 }
@@ -70,26 +73,14 @@ void Command_Map(int playerID, const char **args, uint32_t argsCount, bool silen
         return;
 
     const char *mapNumber = args[0];
-    const char *mapNames[] = {
-        "maps.map1",
-        "maps.map2",
-        "maps.map3",
-        "maps.map4",
-        "maps.map5",
-        "maps.map6",
-        "maps.map7"
-    };
-
     int mapIndex = atoi(mapNumber) - 1;
 
     if (mapIndex >= 0 && mapIndex < sizeof(mapNames) / sizeof(mapNames[0]))
     {
         elapsedTime = 5;
-        timerid = timers->RegisterTimer(1000, TimerCallback);  
-        if (elapsedTime == 0) {
-            player->SendMsg(HUD_PRINTTALK, "[1TAP] Changing to Map: %s", config->Fetch<const char*>(mapNames[mapIndex]));
-            server->ExecuteCommand("changelevel %s", config->Fetch<const char*>(mapNames[mapIndex]));
-        }
+        timerid = timers->RegisterTimer(1000, TimerCallback);
+        Map = mapIndex;
+        player->SendMsg(HUD_PRINTTALK, "[1TAP] Changing to Map: %s", config->Fetch<const char*>(mapNames[mapIndex]));
     }
     else
     {
