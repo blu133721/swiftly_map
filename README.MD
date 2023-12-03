@@ -42,4 +42,5 @@
 Join [Swiftly Discord Server](https://discord.gg/ESKNDx2CNB)!
 
 ### Warning! ⚠️
-Please don't use this on an official server, this is made only for testing and learning purposses, the code is unoptimized, also, everyone can use the changemap commands. The plugin it's made for plugin developers that want a quick way to change the maps.
+Please don't use this on an official server, this is made only for testing and learning purposses, the code is unoptimized, also, everyone can use the changemap commands. 
+The plugin it's made for plugin developers that want a quick way to change the maps.
