@@ -26,8 +26,32 @@ void OnProgramLoad(const char *pluginName, const char *mainFilePath)
     timers = new Timers();
 }
 
+void Command_Map(int playerID, const char **args, uint32_t argsCount, bool silent)
+{
+    
+        player->SendMsg(HUD_PRINTTALK, "[1TAP] -----------------------------------------------------");
+        player->SendMsg(HUD_PRINTTALK, "!1 - Map: %s ", config->Fetch<const char*>("maps.map1"));
+        player->SendMsg(HUD_PRINTTALK, "!2 - Map: %s ", config->Fetch<const char*>("maps.map2"));
+        player->SendMsg(HUD_PRINTTALK, "!3 - Map: %s ", config->Fetch<const char*>("maps.map3"));
+        player->SendMsg(HUD_PRINTTALK, "!4 - Map: %s ", config->Fetch<const char*>("maps.map4"));
+        player->SendMsg(HUD_PRINTTALK, "!5 - Map: %s ", config->Fetch<const char*>("maps.map5"));
+        player->SendMsg(HUD_PRINTTALK, "!6 - Map: %s ", config->Fetch<const char*>("maps.map6"));
+        player->SendMsg(HUD_PRINTTALK, "!7 - Map: %s ", config->Fetch<const char*>("maps.map7"));
+        player->SendMsg(HUD_PRINTTALK, "!8 - Map: %s ", config->Fetch<const char*>("maps.map8"));
+        player->SendMsg(HUD_PRINTTALK, "[1TAP] -----------------------------------------------------");
+        return;
+}
+
+void Command_Map1(int playerID, const char **args, uint32_t argsCount, bool silent)
+{
+        server->ExecuteCommand("sv_cheats %s", config->Fetch<const char*>("maps.map1"));
+        return;
+}
+
 void OnPluginStart()
 {
+    commands->Register("map", reinterpret_cast<void *>(&Command_Map));
+    commands->Register("1", reinterpret_cast<void *>(&Command_Map1));
 }
 
 void OnPluginStop()
