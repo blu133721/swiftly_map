@@ -51,10 +51,52 @@ void Command_Map1(int playerID, const char **args, uint32_t argsCount, bool sile
         return;
 }
 
+void Command_Map2(int playerID, const char **args, uint32_t argsCount, bool silent)
+{
+        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map2"));
+        return;
+}
+
+void Command_Map3(int playerID, const char **args, uint32_t argsCount, bool silent)
+{
+        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map3"));
+        return;
+}
+
+void Command_Map4(int playerID, const char **args, uint32_t argsCount, bool silent)
+{
+        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map4"));
+        return;
+}
+
+void Command_Map5(int playerID, const char **args, uint32_t argsCount, bool silent)
+{
+        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map5"));
+        return;
+}
+
+void Command_Map6(int playerID, const char **args, uint32_t argsCount, bool silent)
+{
+        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map6"));
+        return;
+}
+
+void Command_Map7(int playerID, const char **args, uint32_t argsCount, bool silent)
+{
+        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map7"));
+        return;
+}
+
 void OnPluginStart()
 {
     commands->Register("map", reinterpret_cast<void *>(&Command_Map));
     commands->Register("1", reinterpret_cast<void *>(&Command_Map1));
+    commands->Register("2", reinterpret_cast<void *>(&Command_Map2));
+    commands->Register("3", reinterpret_cast<void *>(&Command_Map3));
+    commands->Register("4", reinterpret_cast<void *>(&Command_Map4));
+    commands->Register("5", reinterpret_cast<void *>(&Command_Map5));
+    commands->Register("6", reinterpret_cast<void *>(&Command_Map6));
+    commands->Register("7", reinterpret_cast<void *>(&Command_Map7));
 }
 
 void OnPluginStop()
