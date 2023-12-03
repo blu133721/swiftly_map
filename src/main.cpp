@@ -41,14 +41,13 @@ void Command_Map(int playerID, const char **args, uint32_t argsCount, bool silen
         player->SendMsg(HUD_PRINTTALK, "!5 - Map: %s ", config->Fetch<const char*>("maps.map5"));
         player->SendMsg(HUD_PRINTTALK, "!6 - Map: %s ", config->Fetch<const char*>("maps.map6"));
         player->SendMsg(HUD_PRINTTALK, "!7 - Map: %s ", config->Fetch<const char*>("maps.map7"));
-        player->SendMsg(HUD_PRINTTALK, "!8 - Map: %s ", config->Fetch<const char*>("maps.map8"));
         player->SendMsg(HUD_PRINTTALK, "[1TAP] -----------------------------------------------------");
         return;
 }
 
 void Command_Map1(int playerID, const char **args, uint32_t argsCount, bool silent)
 {
-        server->ExecuteCommand("map %s", config->Fetch<const char*>("maps.map1"));
+        server->ExecuteCommand("changelevel %s", config->Fetch<const char*>("maps.map1"));
         return;
 }
 
