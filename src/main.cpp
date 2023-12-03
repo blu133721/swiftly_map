@@ -7,6 +7,7 @@ Server *server = nullptr;
 PlayerManager *g_playerManager = nullptr;
 Commands *commands = nullptr;
 Configuration *config = nullptr;
+Timers *timers = nullptr;
 
 void OnProgramLoad(const char *pluginName, const char *mainFilePath)
 {
@@ -16,6 +17,7 @@ void OnProgramLoad(const char *pluginName, const char *mainFilePath)
     g_playerManager = new PlayerManager();
     commands = new Commands(pluginName);
     config = new Configuration();
+    timers = new Timers();
 }
 
 void Command_Maps(int playerID, const char **args, uint32_t argsCount, bool silent)
