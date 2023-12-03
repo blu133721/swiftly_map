@@ -2,6 +2,7 @@
 #include <swiftly/server.h>
 #include <swiftly/commands.h>
 #include <swiftly/configuration.h>
+#include <swiftly/timers.h>
 
 Server *server = nullptr;
 PlayerManager *g_playerManager = nullptr;
