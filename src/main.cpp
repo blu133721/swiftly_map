@@ -28,7 +28,11 @@ void OnProgramLoad(const char *pluginName, const char *mainFilePath)
 
 void Command_Map(int playerID, const char **args, uint32_t argsCount, bool silent)
 {
-    
+
+        Player *player = g_playerManager->GetPlayer(playerID);
+        if (!player)
+            return;
+
         player->SendMsg(HUD_PRINTTALK, "[1TAP] -----------------------------------------------------");
         player->SendMsg(HUD_PRINTTALK, "!1 - Map: %s ", config->Fetch<const char*>("maps.map1"));
         player->SendMsg(HUD_PRINTTALK, "!2 - Map: %s ", config->Fetch<const char*>("maps.map2"));
