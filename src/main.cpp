@@ -44,17 +44,20 @@ void Command_Maps(int playerID, const char **args, uint32_t argsCount, bool sile
     player->SendMsg(HUD_PRINTTALK, "[1TAP] -----------------------------------------------------");
 }
 
-struct TimerData {
-    int mapIndex;
-    Player* player;
-};
-
-void Timer(int timerID, void* data)
+void Timer()
 {
-    TimerData* timerData = static_cast<TimerData*>(data);
-    server->ExecuteCommand("changelevel %s", config->Fetch<const char*>(mapNames[timerData->mapIndex]));
-    timerData->player->SendMsg(HUD_PRINTTALK, "[1TAP] Changing to Map: %s", config->Fetch<const char*>(mapNames[timerData->mapIndex]));
-    delete timerData;  // Don't forget to delete the data when you're done with it
+    print("There are %02d players on the server.\n", g_playerManager->GetPlayers());
+}
+
+unsigned long long timerid;
+
+int elapsedTime = 5;
+
+void TimerCallback() {
+    elapsedTime--;  // decrement elapsedTime.
+    if (elapsedTime == 0) {
+        timers->DestroyTimer(timerid);
+    }
 }
 
 void Command_Map(int playerID, const char **args, uint32_t argsCount, bool silent)
@@ -78,8 +81,12 @@ void Command_Map(int playerID, const char **args, uint32_t argsCount, bool silen
 
     if (mapIndex >= 0 && mapIndex < sizeof(mapNames) / sizeof(mapNames[0]))
     {
-        TimerData* data = new TimerData{mapIndex, player};
-        timers->RegisterTimer(5000, Timer, data);
+        elapsedTime = 5;
+        timerid = timers->RegisterTimer(1000, TimerCallback);  
+        if (elapsedTime == 0) {
+            player->SendMsg(HUD_PRINTTALK, "[1TAP] Changing to Map: %s", config->Fetch<const char*>(mapNames[mapIndex]));
+            server->ExecuteCommand("changelevel %s", config->Fetch<const char*>(mapNames[mapIndex]));
+        }
     }
     else
     {
